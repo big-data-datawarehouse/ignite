@@ -55,7 +55,6 @@ import org.apache.ignite.configuration.ConnectorConfiguration;
 import org.apache.ignite.internal.IgniteInternalFuture;
 import org.apache.ignite.internal.IgniteInterruptedCheckedException;
 import org.apache.ignite.internal.managers.communication.GridIoMessage;
-import org.apache.ignite.internal.processors.cache.mvcc.MvccCoordinatorMessage;
 import org.apache.ignite.internal.util.GridConcurrentHashSet;
 import org.apache.ignite.internal.util.future.GridCompoundFuture;
 import org.apache.ignite.internal.util.nio.ssl.GridNioSslFilter;
@@ -1789,18 +1788,8 @@ public class GridNioServer<T> {
         public void offer(SessionChangeRequest req) {
             changeReqs.offer(req);
 
-            if (select) {
-                Object msg = req.message();
-
-                if (msg instanceof GridIoMessage && ((GridIoMessage) msg).message() instanceof MvccCoordinatorMessage) {
-                    MvccCoordinatorMessage msg0 = (MvccCoordinatorMessage)((GridIoMessage) msg).message();
-
-                    if (!msg0.processedFromNioThread())
-                        return;
-                }
-
+            if (select)
                 selector.wakeup();
-            }
         }
 
         /** {@inheritDoc} */
@@ -4107,7 +4096,5 @@ public class GridNioServer<T> {
          * @return Requested change operation.
          */
         NioOperation operation();
-
-        Object message();
     }
 }
