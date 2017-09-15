@@ -1795,7 +1795,7 @@ public class GridNioServer<T> {
                 if (msg instanceof GridIoMessage && ((GridIoMessage) msg).message() instanceof MvccCoordinatorMessage) {
                     MvccCoordinatorMessage msg0 = (MvccCoordinatorMessage)((GridIoMessage) msg).message();
 
-                    if (msg0.processedFromNioThread())
+                    if (!msg0.processedFromNioThread())
                         return;
                 }
 
